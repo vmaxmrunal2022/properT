@@ -58,7 +58,7 @@ class UnitController extends Controller
      * Display a listing of the resource.
      */
 
-    public function unitDetails($unit_id)
+    public function unitDetails_working($unit_id)
     {
         $unit_data = FloorUnitMap::find($unit_id);
         $property = Property::find($unit_data->property_id);
@@ -199,7 +199,7 @@ class UnitController extends Controller
                         return view('admin.pages.property.units.1rk-apartments', get_defined_vars());
                     }
                 }
-            } else{
+            } else {
                 $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                 $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
                 $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
@@ -209,12 +209,11 @@ class UnitController extends Controller
                     ->where('unit_id', $unit_id)
                     ->first();
                 if ($check_record) {
-                    $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)->where('unit_id',$unit_id)->first();
+                    $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)->where('unit_id', $unit_id)->first();
                     return view('admin.pages.property.units.views.view_office', get_defined_vars());
                 } else {
                     return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
                 }
-                
             }
         } elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 149) {  //for Commercial Retail 
             $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
@@ -267,8 +266,7 @@ class UnitController extends Controller
             } else {
                 return view('admin.pages.property.units.storage', get_defined_vars());
             }
-        }
-         elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 151) { //for other commercial
+        } elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 151) { //for other commercial
             $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
             $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
             $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -293,13 +291,35 @@ class UnitController extends Controller
             } else {
                 return view('admin.pages.property.units.other_commercial', get_defined_vars());
             }
-        } 
+        }
 
         // for multiland 
 
-        elseif($property->cat_id == 3){
-               if($unit_data->unit_cat_type_id == 1) { // commercial
-                    if(($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 0){
+        elseif ($property->cat_id == 3) {
+            if ($unit_data->unit_cat_type_id == 1) { // commercial
+                if (($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 0) {
+                    $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                    $pantries = UnitAmenityOption::where('parent_id', 1)->get();
+                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                    $conf_rooms = UnitAmenityOption::where('parent_id', 2)->get();
+                    $receptions = UnitAmenityOption::where('parent_id', 3)->get();
+                    //Facilities Available
+                    $furnishing = UnitAmenityOption::where('parent_id', 4)->get();
+                    $central_air_conditions = UnitAmenityOption::where('parent_id', 5)->get();
+                    $oxygen_dust = UnitAmenityOption::where('parent_id', 6)->get();
+                    $UPS  = UnitAmenityOption::where('parent_id', 7)->get();
+                    $fire_safety_masures =  UnitAmenityOption::where('parent_id', 8)->get();
+                    $lifts =  UnitAmenityOption::where('parent_id', 9)->get();
+                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                    $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                    $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                    $sub_category = FloorUnitCategory::where('parent_id', '2')->get();
+                    //Amenities
+                    $unit_categories = FloorUnitCategory::where('category_code', 1)->select(['id', 'name', 'field_type'])->get();
+                    return view('admin.pages.property.units.vacent-screen', get_defined_vars());
+                }
+                if (($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id != 0) {   // occupied
+                    if ($unit_data->unit_cat_id == 102) { //mrunal (office)
                         $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
                         $pantries = UnitAmenityOption::where('parent_id', 1)->get();
                         $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
@@ -315,171 +335,41 @@ class UnitController extends Controller
                         $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
                         $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
                         $office_types = UnitAmenityOption::where('parent_id', 24)->get();
-                        $sub_category = FloorUnitCategory::where('parent_id', '2')->get();
                         //Amenities
-                        $unit_categories = FloorUnitCategory::where('category_code', 1)->select(['id', 'name', 'field_type'])->get();
-                        return view('admin.pages.property.units.vacent-screen', get_defined_vars());
-                    }
-                    if(($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id != 0){   // occupied
-                        if ($unit_data->unit_cat_id == 102) { //mrunal (office)
-                            $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
-                            $pantries = UnitAmenityOption::where('parent_id', 1)->get();
-                            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
-                            $conf_rooms = UnitAmenityOption::where('parent_id', 2)->get();
-                            $receptions = UnitAmenityOption::where('parent_id', 3)->get();
-                            //Facilities Available
-                            $furnishing = UnitAmenityOption::where('parent_id', 4)->get();
-                            $central_air_conditions = UnitAmenityOption::where('parent_id', 5)->get();
-                            $oxygen_dust = UnitAmenityOption::where('parent_id', 6)->get();
-                            $UPS  = UnitAmenityOption::where('parent_id', 7)->get();
-                            $fire_safety_masures =  UnitAmenityOption::where('parent_id', 8)->get();
-                            $lifts =  UnitAmenityOption::where('parent_id', 9)->get();
-                            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
-                            $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
-                            $office_types = UnitAmenityOption::where('parent_id', 24)->get();
-                            //Amenities
-                            $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                            ->where('unit_id', $unit_id)
+                            ->first();
+                        if ($check_record) {
+                            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
                                 ->where('unit_id', $unit_id)
                                 ->first();
-                            if ($check_record) {
-                                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
-                                    ->where('unit_id', $unit_id)
-                                    ->first();
-                                return view('admin.pages.property.units.views.view_office', get_defined_vars());
-                            } else {
-                                return view('admin.pages.property.units.comm_ofc_unit', get_defined_vars());
-                            }
-                        } 
-                        elseif ($unit_data->unit_cat_id == 109) { //aparanjith (hospitality)
-                            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
-                            $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
-                            $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
-                            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
-                            $age_props = UnitAmenityOption::where('parent_id', 11)->get();
-                            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)->where('unit_id', $unit_id)->first();
-                            if ($secondary_level_unit_data) {
-                                return view('admin.pages.property.units.views.view_office', get_defined_vars());
-                            } else {
-                                return view('admin.pages.property.units.hospitality', get_defined_vars());
-                            }
+                            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                        } else {
+                            return view('admin.pages.property.units.comm_ofc_unit', get_defined_vars());
                         }
-                        elseif ( $unit_data->unit_cat_id == 149) {  //for Commercial Retail 
-                            $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
-                            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
-                            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
-                            $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
-                            $office_types = UnitAmenityOption::where('parent_id', 24)->get();
-                            $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
-                            $located_near = UnitAmenityOption::where('parent_id', 26)->get();
-                            $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
-                            $units2 = Unit::whereIn('id', ['1', '2'])->get();
-                            //Amenities
-                            $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
-                                ->where('unit_id', $unit_id)
-                                ->first();
-                            if ($check_record) {
-                                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
-                                    ->where(
-                                        'unit_id',
-                                        $unit_id
-                                    )
-                                    ->first();
-                                return view('admin.pages.property.units.views.view_office', get_defined_vars());
-                            } else {
-                                return view('admin.pages.property.units.retail_commercial', get_defined_vars());
-                            }
-                        } 
-                        elseif ( $unit_data->unit_cat_id == 150) { //for storage/indusrty
-                            $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
-                            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
-                            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
-                            $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
-                            $office_types = UnitAmenityOption::where('parent_id', 24)->get();
-                
-                            $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
-                            $located_near = UnitAmenityOption::where('parent_id', 26)->get();
-                            $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
-                            $units = Unit::whereIn('id', ['3', '4'])->get();
-                            $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
-                                ->where('unit_id', $unit_id)
-                                ->first();
-                            if ($check_record) {
-                                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
-                                    ->where(
-                                        'unit_id',
-                                        $unit_id
-                                    )
-                                    ->first();
-                
-                                return view('admin.pages.property.units.views.view_office', get_defined_vars());
-                            } else {
-                                return view('admin.pages.property.units.storage', get_defined_vars());
-                            }
-                        } 
-                        elseif ($unit_data->unit_cat_id == 151) { //for other commercial
-                            $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
-                            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
-                            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
-                            $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
-                            $office_types = UnitAmenityOption::where('parent_id', 24)->get();
-                            $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
-                            $located_near = UnitAmenityOption::where('parent_id', 26)->get();
-                            $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
-                            $units = Unit::whereIn('id', ['3', '4'])->get();
-                            $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
-                                ->where('unit_id', $unit_id)
-                                ->first();
-                            if ($check_record) {
-                                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
-                                    ->where(
-                                        'unit_id',
-                                        $unit_id
-                                    )
-                                    ->first();
-                
-                                return view('admin.pages.property.units.views.view_office', get_defined_vars());
-                            } else {
-                                return view('admin.pages.property.units.other_commercial', get_defined_vars());
-                            }
+                    } elseif ($unit_data->unit_cat_id == 109) { //aparanjith (hospitality)
+                        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                        $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
+                        $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+                        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                        $age_props = UnitAmenityOption::where('parent_id', 11)->get();
+                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)->where('unit_id', $unit_id)->first();
+                        if ($secondary_level_unit_data) {
+                            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                        } else {
+                            return view('admin.pages.property.units.hospitality', get_defined_vars());
                         }
-                        else {
-                            $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
-                            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
-                            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
-                            $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
-                            $office_types = UnitAmenityOption::where('parent_id', 24)->get();
-                            $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
-                            $located_near = UnitAmenityOption::where('parent_id', 26)->get();
-                            $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
-                            $units = Unit::whereIn('id', ['3', '4'])->get();
-                            $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
-                                ->where('unit_id', $unit_id)
-                                ->first();
-                            if ($check_record) {
-                                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
-                                    ->where(
-                                        'unit_id',
-                                        $unit_id
-                                    )
-                                    ->first();
-                
-                                return view('admin.pages.property.units.views.view_office', get_defined_vars());
-                            } else {
-                                return view('admin.pages.property.units.other_commercial', get_defined_vars());
-                            }
-                        }
-                    }
-               }
-               if($unit_data->unit_cat_type_id == 2){ // Resedential
-                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
-                    $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
-                    $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
-                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
-                    $age_props = UnitAmenityOption::where('parent_id', 11)->get();
-                    if ($unit_data->apartment_id == null) {
-                        $apartment_types = UnitApartmentType::all();
-                        return view('admin.pages.property.units.apartment-types', get_defined_vars());
-                    } elseif ($unit_data->apartment_id == 1 || $unit_data->apartment_id == 2) {
+                    } elseif ($unit_data->unit_cat_id == 149) {  //for Commercial Retail 
+                        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                        $units2 = Unit::whereIn('id', ['1', '2'])->get();
+                        //Amenities
                         $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
                             ->where('unit_id', $unit_id)
                             ->first();
@@ -492,22 +382,122 @@ class UnitController extends Controller
                                 ->first();
                             return view('admin.pages.property.units.views.view_office', get_defined_vars());
                         } else {
-                            return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
+                            return view('admin.pages.property.units.retail_commercial', get_defined_vars());
                         }
-                    } elseif ($unit_data->apartment_id == 3) {
-                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
-                        if ($secondary_level_unit_data) {
-                            //return view('admin.pages.property.units.views.1rk-view', get_defined_vars());
+                    } elseif ($unit_data->unit_cat_id == 150) { //for storage/indusrty
+                        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+
+                        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                        $units = Unit::whereIn('id', ['3', '4'])->get();
+                        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                            ->where('unit_id', $unit_id)
+                            ->first();
+                        if ($check_record) {
+                            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                                ->where(
+                                    'unit_id',
+                                    $unit_id
+                                )
+                                ->first();
+
                             return view('admin.pages.property.units.views.view_office', get_defined_vars());
                         } else {
-                            return view('admin.pages.property.units.1rk-apartments', get_defined_vars());
+                            return view('admin.pages.property.units.storage', get_defined_vars());
+                        }
+                    } elseif ($unit_data->unit_cat_id == 151) { //for other commercial
+                        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                        $units = Unit::whereIn('id', ['3', '4'])->get();
+                        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                            ->where('unit_id', $unit_id)
+                            ->first();
+                        if ($check_record) {
+                            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                                ->where(
+                                    'unit_id',
+                                    $unit_id
+                                )
+                                ->first();
+
+                            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                        } else {
+                            return view('admin.pages.property.units.other_commercial', get_defined_vars());
+                        }
+                    } else {
+                        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                        $units = Unit::whereIn('id', ['3', '4'])->get();
+                        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                            ->where('unit_id', $unit_id)
+                            ->first();
+                        if ($check_record) {
+                            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                                ->where(
+                                    'unit_id',
+                                    $unit_id
+                                )
+                                ->first();
+
+                            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                        } else {
+                            return view('admin.pages.property.units.other_commercial', get_defined_vars());
                         }
                     }
-               }
-        }
-
-        
-        else {
+                }
+            }
+            if ($unit_data->unit_cat_type_id == 2) { // Resedential
+                $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
+                $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+                $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                $age_props = UnitAmenityOption::where('parent_id', 11)->get();
+                if ($unit_data->apartment_id == null) {
+                    $apartment_types = UnitApartmentType::all();
+                    return view('admin.pages.property.units.apartment-types', get_defined_vars());
+                } elseif ($unit_data->apartment_id == 1 || $unit_data->apartment_id == 2) {
+                    $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                        ->where('unit_id', $unit_id)
+                        ->first();
+                    if ($check_record) {
+                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                            ->where(
+                                'unit_id',
+                                $unit_id
+                            )
+                            ->first();
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
+                    }
+                } elseif ($unit_data->apartment_id == 3) {
+                    $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
+                    if ($secondary_level_unit_data) {
+                        //return view('admin.pages.property.units.views.1rk-view', get_defined_vars());
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.1rk-apartments', get_defined_vars());
+                    }
+                }
+            }
+        } else {
             $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
             $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
             $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -534,6 +524,532 @@ class UnitController extends Controller
             }
         }
     }
+
+    public function unitDetails($unit_id)
+    {
+        $unit_data = FloorUnitMap::find($unit_id);
+        $property = Property::find($unit_data->property_id);
+        $prop_category_data = Category::find($property->category->id);
+        $units = Unit::whereIn('id', ['3', '4'])->get();  //land Measuring units
+        $ownerships = OwnershipOptions::get();
+        $property_facings = PropertyFacing::get();
+        $unit_amenity = UnitAmenity::get();
+        $price_details = UnitAmenityOption::where('parent_id', 22)->get();
+        $price_details_periods = UnitAmenityOption::where('parent_id', 23)->get();
+        $agreement_types = UnitAmenityOption::where('parent_id', 15)->get();
+        $rent_details = UnitAmenityOption::where('parent_id', 17)->get();
+        $security_deposit = UnitAmenityOption::where('parent_id', 18)->get();
+        $agreement_durations = UnitAmenityOption::where('parent_id', 16)->get();
+        $notice_months = UnitAmenityOption::where('parent_id', 19)->get();
+        //Amenity
+        $amenities = UnitAmenityOption::where('parent_id', 20)
+            ->get();
+        $location_advantages = UnitAmenityOption::where('parent_id', 21)->get();
+        $Society_features = UnitAmenityOption::where('parent_id', 29)
+            ->get();
+        $additional_features = UnitAmenityOption::where('parent_id', '30')
+            ->get();
+        $other_features = UnitAmenityOption::where('parent_id', '31')
+            ->get();
+        $water_source = UnitAmenityOption::where('parent_id', '32')
+            ->get();
+        $overlooking = UnitAmenityOption::where('parent_id', '33')
+            ->get();
+        $power_backup = UnitAmenityOption::where('parent_id', '34')
+            ->get();
+        $flooring_type = FloorType::get();
+        $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+
+        $this->processPropertyUnit($property, $unit_data, $unit_id);
+    }
+
+    public function processPropertyUnit($property, $unit_data, $unit_id)
+    {
+        if ($property->cat_id == 1) {
+            if ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) {
+                if ($unit_data->unit_cat_id == 0) {
+                    return $this->processCommercialOfficeUnit($property, $unit_data, $unit_id);
+                } elseif ($unit_data->unit_cat_id == 102) {
+                    return $this->processMrunalOfficeUnit($property, $unit_data, $unit_id);
+                } elseif ($unit_data->unit_cat_id == 109) {
+                    return $this->processHospitalityUnit($property, $unit_data, $unit_id);
+                } elseif ($unit_data->unit_cat_id == 149) {
+                    return $this->processRetailCommercialUnit($property, $unit_data, $unit_id);
+                } elseif ($unit_data->unit_cat_id == 150) {
+                    return $this->processStorageIndustryUnit($property, $unit_data, $unit_id);
+                } elseif ($unit_data->unit_cat_id == 151) {
+                    return $this->processOtherCommercialUnit($property, $unit_data, $unit_id);
+                }
+            }
+        } elseif ($property->cat_id == 2) {
+            return $this->processResidentialUnit($property, $unit_data, $unit_id);
+        } elseif ($property->cat_id == 3) {
+            return $this->processMultilandUnit($property, $unit_data, $unit_id);
+        } else {
+            return $this->processDefaultUnit($property, $unit_data, $unit_id);
+        }
+    }
+
+    public function processCommercialOfficeUnit($property, $unit_data, $unit_id)
+    {
+        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+        $pantries = UnitAmenityOption::where('parent_id', 1)->get();
+        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+        $conf_rooms = UnitAmenityOption::where('parent_id', 2)->get();
+        $receptions = UnitAmenityOption::where('parent_id', 3)->get();
+        //Facilities Available
+        $furnishing = UnitAmenityOption::where('parent_id', 4)->get();
+        $central_air_conditions = UnitAmenityOption::where('parent_id', 5)->get();
+        $oxygen_dust = UnitAmenityOption::where('parent_id', 6)->get();
+        $UPS  = UnitAmenityOption::where(
+            'parent_id',
+            7
+        )->get();
+        $fire_safety_masures =  UnitAmenityOption::where('parent_id', 8)->get();
+        $lifts =  UnitAmenityOption::where('parent_id', 9)->get();
+        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+        $sub_category = FloorUnitCategory::where('parent_id', '2')->get();
+        //Amenities
+        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+            ->where('unit_id', $unit_id)
+            ->first();
+        $unit_categories = FloorUnitCategory::where('category_code', 1)->select(['id', 'name', 'field_type'])->get();
+        if ($check_record) {
+            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                ->where('unit_id', $unit_id)
+                ->first();
+            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+        } else {
+            return view('admin.pages.property.units.vacent-screen', get_defined_vars());
+        }
+    }
+
+    public function processMrunalOfficeUnit($property, $unit_data, $unit_id)
+    {
+        // Handle Mrunal Office Unit Logic
+        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+        $pantries = UnitAmenityOption::where('parent_id', 1)->get();
+        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+        $conf_rooms = UnitAmenityOption::where('parent_id', 2)->get();
+        $receptions = UnitAmenityOption::where('parent_id', 3)->get();
+        //Facilities Available
+        $furnishing = UnitAmenityOption::where('parent_id', 4)->get();
+        $central_air_conditions = UnitAmenityOption::where('parent_id', 5)->get();
+        $oxygen_dust = UnitAmenityOption::where('parent_id', 6)->get();
+        $UPS  = UnitAmenityOption::where('parent_id', 7)->get();
+        $fire_safety_masures =  UnitAmenityOption::where('parent_id', 8)->get();
+        $lifts =  UnitAmenityOption::where('parent_id', 9)->get();
+        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+        //Amenities
+        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+            ->where('unit_id', $unit_id)
+            ->first();
+        if ($check_record) {
+            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                ->where('unit_id', $unit_id)
+                ->first();
+            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+        } else {
+            return view('admin.pages.property.units.comm_ofc_unit', get_defined_vars());
+        }
+    }
+
+    public function processHospitalityUnit($property, $unit_data, $unit_id)
+    {
+        // Handle Hospitality Unit Logic
+        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+        $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
+        $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+        $age_props = UnitAmenityOption::where('parent_id', 11)->get();
+        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)->where('unit_id', $unit_id)->first();
+        if ($secondary_level_unit_data) {
+            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+        } else {
+            return view('admin.pages.property.units.hospitality', get_defined_vars());
+        }
+    }
+
+    public function processRetailCommercialUnit($property, $unit_data, $unit_id)
+    {
+        // Handle Retail Commercial Unit Logic
+        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+        $units2 = Unit::whereIn('id', ['1', '2'])->get();
+        //Amenities
+        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+            ->where('unit_id', $unit_id)
+            ->first();
+        if ($check_record) {
+            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                ->where(
+                    'unit_id',
+                    $unit_id
+                )
+                ->first();
+            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+        } else {
+            return view('admin.pages.property.units.retail_commercial', get_defined_vars());
+        }
+    }
+
+    public function processStorageIndustryUnit($property, $unit_data, $unit_id)
+    {
+        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+
+        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+        $units = Unit::whereIn('id', ['3', '4'])->get();
+        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+            ->where('unit_id', $unit_id)
+            ->first();
+        if ($check_record) {
+            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                ->where(
+                    'unit_id',
+                    $unit_id
+                )
+                ->first();
+
+            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+        } else {
+            return view('admin.pages.property.units.storage', get_defined_vars());
+        }
+    }
+
+    public function processOtherCommercialUnit($property, $unit_data, $unit_id)
+    {
+        // Handle Other Commercial Unit Logic
+        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+        $units = Unit::whereIn('id', ['3', '4'])->get();
+        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+            ->where('unit_id', $unit_id)
+            ->first();
+        if ($check_record) {
+            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                ->where(
+                    'unit_id',
+                    $unit_id
+                )
+                ->first();
+
+            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+        } else {
+            return view('admin.pages.property.units.other_commercial', get_defined_vars());
+        }
+    }
+
+    public function processResidentialUnit($property, $unit_data, $unit_id)
+    {
+        if ($property->residential_type == 7 && $property->residential_sub_type == 9) {
+            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+            $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
+            $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+            $age_props = UnitAmenityOption::where('parent_id', 11)->get();
+
+            if ($unit_data->apartment_id == null) {
+                $apartment_types = UnitApartmentType::all();
+                return view('admin.pages.property.units.apartment-types', get_defined_vars());
+            } elseif ($unit_data->apartment_id == 1 || $unit_data->apartment_id == 2) {
+                $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                    ->where('unit_id', $unit_id)
+                    ->first();
+                if ($check_record) {
+                    $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                        ->where(
+                            'unit_id',
+                            $unit_id
+                        )
+                        ->first();
+                    return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                } else {
+                    return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
+                }
+            } elseif ($unit_data->apartment_id == 3) {
+                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
+                if ($secondary_level_unit_data) {
+                    //return view('admin.pages.property.units.views.1rk-view', get_defined_vars());
+                    return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                } else {
+                    return view('admin.pages.property.units.1rk-apartments', get_defined_vars());
+                }
+            }
+        } else {
+            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+            $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
+            $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+            $age_props = UnitAmenityOption::where('parent_id', 11)->get();
+            $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                ->where('unit_id', $unit_id)
+                ->first();
+            if ($check_record) {
+                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)->where('unit_id', $unit_id)->first();
+                return view('admin.pages.property.units.views.view_office', get_defined_vars());
+            } else {
+                return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
+            }
+        }
+    }
+
+    public function processMultilandUnit($property, $unit_data, $unit_id)
+    {
+        // Handle Multiland Unit Logic
+        if ($unit_data->unit_cat_type_id == 1) { // commercial
+            if (($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 0) {
+                $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                $pantries = UnitAmenityOption::where('parent_id', 1)->get();
+                $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                $conf_rooms = UnitAmenityOption::where('parent_id', 2)->get();
+                $receptions = UnitAmenityOption::where('parent_id', 3)->get();
+                //Facilities Available
+                $furnishing = UnitAmenityOption::where('parent_id', 4)->get();
+                $central_air_conditions = UnitAmenityOption::where('parent_id', 5)->get();
+                $oxygen_dust = UnitAmenityOption::where('parent_id', 6)->get();
+                $UPS  = UnitAmenityOption::where('parent_id', 7)->get();
+                $fire_safety_masures =  UnitAmenityOption::where('parent_id', 8)->get();
+                $lifts =  UnitAmenityOption::where('parent_id', 9)->get();
+                $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                $sub_category = FloorUnitCategory::where('parent_id', '2')->get();
+                //Amenities
+                $unit_categories = FloorUnitCategory::where('category_code', 1)->select(['id', 'name', 'field_type'])->get();
+                return view('admin.pages.property.units.vacent-screen', get_defined_vars());
+            }
+            if (($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id != 0) {   // occupied
+                if ($unit_data->unit_cat_id == 102) { //mrunal (office)
+                    $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                    $pantries = UnitAmenityOption::where('parent_id', 1)->get();
+                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                    $conf_rooms = UnitAmenityOption::where('parent_id', 2)->get();
+                    $receptions = UnitAmenityOption::where('parent_id', 3)->get();
+                    //Facilities Available
+                    $furnishing = UnitAmenityOption::where('parent_id', 4)->get();
+                    $central_air_conditions = UnitAmenityOption::where('parent_id', 5)->get();
+                    $oxygen_dust = UnitAmenityOption::where('parent_id', 6)->get();
+                    $UPS  = UnitAmenityOption::where('parent_id', 7)->get();
+                    $fire_safety_masures =  UnitAmenityOption::where('parent_id', 8)->get();
+                    $lifts =  UnitAmenityOption::where('parent_id', 9)->get();
+                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                    $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                    $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                    //Amenities
+                    $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                        ->where('unit_id', $unit_id)
+                        ->first();
+                    if ($check_record) {
+                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                            ->where('unit_id', $unit_id)
+                            ->first();
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.comm_ofc_unit', get_defined_vars());
+                    }
+                } elseif ($unit_data->unit_cat_id == 109) { //aparanjith (hospitality)
+                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                    $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
+                    $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                    $age_props = UnitAmenityOption::where('parent_id', 11)->get();
+                    $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)->where('unit_id', $unit_id)->first();
+                    if ($secondary_level_unit_data) {
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.hospitality', get_defined_vars());
+                    }
+                } elseif ($unit_data->unit_cat_id == 149) {  //for Commercial Retail 
+                    $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                    $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                    $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                    $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                    $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                    $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                    $units2 = Unit::whereIn('id', ['1', '2'])->get();
+                    //Amenities
+                    $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                        ->where('unit_id', $unit_id)
+                        ->first();
+                    if ($check_record) {
+                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                            ->where(
+                                'unit_id',
+                                $unit_id
+                            )
+                            ->first();
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.retail_commercial', get_defined_vars());
+                    }
+                } elseif ($unit_data->unit_cat_id == 150) { //for storage/indusrty
+                    $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                    $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                    $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+
+                    $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                    $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                    $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                    $units = Unit::whereIn('id', ['3', '4'])->get();
+                    $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                        ->where('unit_id', $unit_id)
+                        ->first();
+                    if ($check_record) {
+                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                            ->where(
+                                'unit_id',
+                                $unit_id
+                            )
+                            ->first();
+
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.storage', get_defined_vars());
+                    }
+                } elseif ($unit_data->unit_cat_id == 151) { //for other commercial
+                    $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                    $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                    $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                    $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                    $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                    $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                    $units = Unit::whereIn('id', ['3', '4'])->get();
+                    $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                        ->where('unit_id', $unit_id)
+                        ->first();
+                    if ($check_record) {
+                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                            ->where(
+                                'unit_id',
+                                $unit_id
+                            )
+                            ->first();
+
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.other_commercial', get_defined_vars());
+                    }
+                } else {
+                    $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+                    $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+                    $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+                    $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+                    $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+                    $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+                    $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+                    $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+                    $units = Unit::whereIn('id', ['3', '4'])->get();
+                    $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                        ->where('unit_id', $unit_id)
+                        ->first();
+                    if ($check_record) {
+                        $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                            ->where(
+                                'unit_id',
+                                $unit_id
+                            )
+                            ->first();
+
+                        return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                    } else {
+                        return view('admin.pages.property.units.other_commercial', get_defined_vars());
+                    }
+                }
+            }
+        }
+        if ($unit_data->unit_cat_type_id == 2) { // Resedential
+            $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+            $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
+            $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
+            $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+            $age_props = UnitAmenityOption::where('parent_id', 11)->get();
+            if ($unit_data->apartment_id == null) {
+                $apartment_types = UnitApartmentType::all();
+                return view('admin.pages.property.units.apartment-types', get_defined_vars());
+            } elseif ($unit_data->apartment_id == 1 || $unit_data->apartment_id == 2) {
+                $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+                    ->where('unit_id', $unit_id)
+                    ->first();
+                if ($check_record) {
+                    $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                        ->where(
+                            'unit_id',
+                            $unit_id
+                        )
+                        ->first();
+                    return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                } else {
+                    return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
+                }
+            } elseif ($unit_data->apartment_id == 3) {
+                $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
+                if ($secondary_level_unit_data) {
+                    //return view('admin.pages.property.units.views.1rk-view', get_defined_vars());
+                    return view('admin.pages.property.units.views.view_office', get_defined_vars());
+                } else {
+                    return view('admin.pages.property.units.1rk-apartments', get_defined_vars());
+                }
+            }
+        }
+    }
+
+    public function processDefaultUnit($property, $unit_data, $unit_id)
+    {
+        // Handle Default Unit Logic
+        $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
+        $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
+        $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
+        $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
+        $office_types = UnitAmenityOption::where('parent_id', 24)->get();
+        $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
+        $located_near = UnitAmenityOption::where('parent_id', 26)->get();
+        $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
+        $units = Unit::whereIn('id', ['3', '4'])->get();
+        $check_record = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)
+            ->where('unit_id', $unit_id)
+            ->first();
+        if ($check_record) {
+            $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $property->id)
+                ->where(
+                    'unit_id',
+                    $unit_id
+                )
+                ->first();
+
+            return view('admin.pages.property.units.views.view_office', get_defined_vars());
+        } else {
+            return view('admin.pages.property.units.other_commercial', get_defined_vars());
+        }
+    }
+
 
     public function getSubCategories(Request $request)
     {
@@ -730,8 +1246,7 @@ class UnitController extends Controller
             } else {
                 return view('admin.pages.property.units.comm_ofc_unit', get_defined_vars());
             }
-        }
-         elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 109) { //aparanjith (hospitality)--done
+        } elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 109) { //aparanjith (hospitality)--done
             $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
             $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
             $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
@@ -756,22 +1271,21 @@ class UnitController extends Controller
                     $onerkdata = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
                     if ($onerkdata) {
                         return view('admin.pages.property.units.edits.1rk-edit', get_defined_vars());
-                    }else{
+                    } else {
                         return view('admin.pages.property.units.1rk-apartments', get_defined_vars());
                     }
                 } elseif ($unit_data->apartment_id == 1 || $unit_data->apartment_id == 2) {
                     $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
                     if ($secondary_level_unit_data) {
                         return view('admin.pages.property.units.edits.serviced-apartments-edit', get_defined_vars());
-                    }else{
-                        return view('admin.pages.property.units.serviced-apartments', get_defined_vars()); 
+                    } else {
+                        return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
                     }
                 } elseif ($unit_data->apartment_id == null) {
                     $apartment_types = UnitApartmentType::all();
                     return view('admin.pages.property.units.apartment-types', get_defined_vars());
                 }
-            }
-            else{
+            } else {
                 $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                 $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
                 $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
@@ -780,13 +1294,11 @@ class UnitController extends Controller
                 $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
                 if ($secondary_level_unit_data) {
                     return view('admin.pages.property.units.edits.serviced-apartments-edit', get_defined_vars());
-                }else{
-                    return view('admin.pages.property.units.serviced-apartments', get_defined_vars()); 
+                } else {
+                    return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
                 }
-              
             }
-        } 
-        elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 149) {  //for Commercial Retail 
+        } elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 149) {  //for Commercial Retail 
             $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
             $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
             $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -803,8 +1315,7 @@ class UnitController extends Controller
             } else {
                 return view('admin.pages.property.units.retail_commercial', get_defined_vars());
             }
-        } 
-        elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 150) { //for storage/indusrty
+        } elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 150) { //for storage/indusrty
             $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
             $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
             $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -821,8 +1332,7 @@ class UnitController extends Controller
             } else {
                 return view('admin.pages.property.units.storage', get_defined_vars());
             }
-        } 
-        elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 151) { //for other commercial
+        } elseif ($property->cat_id == 1 && ($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 151) { //for other commercial
             $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
             $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
             $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -838,12 +1348,12 @@ class UnitController extends Controller
             } else {
                 return view('admin.pages.property.units.other_commercial', get_defined_vars());
             }
-        } 
+        }
         // for multiland 
 
-        elseif($property->cat_id == 3){
-            if($unit_data->unit_cat_type_id == 1) { // commercial
-                if(($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 0){
+        elseif ($property->cat_id == 3) {
+            if ($unit_data->unit_cat_type_id == 1) { // commercial
+                if (($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id == 0) {
                     $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
                     $pantries = UnitAmenityOption::where('parent_id', 1)->get();
                     $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
@@ -863,7 +1373,7 @@ class UnitController extends Controller
                     //Amenities
                     $unit_categories = FloorUnitCategory::where('category_code', 1)->select(['id', 'name', 'field_type'])->get();
                     return view('admin.pages.property.units.vacent-screen', get_defined_vars());
-                }elseif(($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id != 0){
+                } elseif (($unit_data->unit_type_id == 2 || $unit_data->unit_type_id == 1) && $unit_data->unit_cat_id != 0) {
                     if ($unit_data->unit_cat_id == 102) { //mrunal (office)
                         $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
                         $pantries = UnitAmenityOption::where('parent_id', 1)->get();
@@ -890,8 +1400,7 @@ class UnitController extends Controller
                         } else {
                             return view('admin.pages.property.units.comm_ofc_unit', get_defined_vars());
                         }
-                    } 
-                    elseif ($unit_data->unit_cat_id == 109) { //aparanjith (hospitality)
+                    } elseif ($unit_data->unit_cat_id == 109) { //aparanjith (hospitality)
                         $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                         $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
                         $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
@@ -903,8 +1412,7 @@ class UnitController extends Controller
                         } else {
                             return view('admin.pages.property.units.hospitality', get_defined_vars());
                         }
-                    }
-                    elseif ( $unit_data->unit_cat_id == 149) {  //for Commercial Retail 
+                    } elseif ($unit_data->unit_cat_id == 149) {  //for Commercial Retail 
                         $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
                         $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                         $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -921,14 +1429,13 @@ class UnitController extends Controller
                         } else {
                             return view('admin.pages.property.units.retail_commercial', get_defined_vars());
                         }
-                    } 
-                    elseif ( $unit_data->unit_cat_id == 150) { //for storage/indusrty
+                    } elseif ($unit_data->unit_cat_id == 150) { //for storage/indusrty
                         $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
                         $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                         $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
                         $age_of_property = UnitAmenityOption::where('parent_id', 11)->get();
                         $office_types = UnitAmenityOption::where('parent_id', 24)->get();
-            
+
                         $washrooms = UnitAmenityOption::where('parent_id', 25)->get();
                         $located_near = UnitAmenityOption::where('parent_id', 26)->get();
                         $parking_types = UnitAmenityOption::where('parent_id', 27)->get();
@@ -939,8 +1446,7 @@ class UnitController extends Controller
                         } else {
                             return view('admin.pages.property.units.storage', get_defined_vars());
                         }
-                    } 
-                    elseif ($unit_data->unit_cat_id == 151) { //for other commercial
+                    } elseif ($unit_data->unit_cat_id == 151) { //for other commercial
                         $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
                         $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                         $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -956,8 +1462,7 @@ class UnitController extends Controller
                         } else {
                             return view('admin.pages.property.units.other_commercial', get_defined_vars());
                         }
-                    }
-                    else {
+                    } else {
                         $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
                         $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                         $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
@@ -977,7 +1482,7 @@ class UnitController extends Controller
                                     $unit_id
                                 )
                                 ->first();
-            
+
                             return view('admin.pages.property.units.edits.other-commercial-edit', get_defined_vars());
                         } else {
                             return view('admin.pages.property.units.other_commercial', get_defined_vars());
@@ -985,7 +1490,7 @@ class UnitController extends Controller
                     }
                 }
             }
-            if($unit_data->unit_cat_type_id == 2){ // Resedential
+            if ($unit_data->unit_cat_type_id == 2) { // Resedential
                 $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
                 $other_rooms = UnitAmenityOption::where('parent_id', 13)->get();
                 $furnished_options = UnitAmenityOption::where('parent_id', 14)->get();
@@ -995,23 +1500,22 @@ class UnitController extends Controller
                     $onerkdata = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
                     if ($onerkdata) {
                         return view('admin.pages.property.units.edits.1rk-edit', get_defined_vars());
-                    }else{
-                        return view('admin.pages.property.units.1rk-apartments', get_defined_vars()); 
+                    } else {
+                        return view('admin.pages.property.units.1rk-apartments', get_defined_vars());
                     }
                 } elseif ($unit_data->apartment_id == 1 || $unit_data->apartment_id == 2) {
                     $secondary_level_unit_data = SecondaryUnitLevelData::where('property_id', $unit_data->property_id)->where('unit_id', $unit_id)->first();
                     if ($secondary_level_unit_data) {
                         return view('admin.pages.property.units.edits.serviced-apartments-edit', get_defined_vars());
-                    }else{
+                    } else {
                         return view('admin.pages.property.units.serviced-apartments', get_defined_vars());
                     }
-                }elseif ($unit_data->apartment_id == null) {
+                } elseif ($unit_data->apartment_id == null) {
                     $apartment_types = UnitApartmentType::all();
                     return view('admin.pages.property.units.apartment-types', get_defined_vars());
                 }
             }
-        }
-        else {
+        } else {
             $sub_categories = FloorUnitCategory::where('parent_id', $unit_data->unit_cat_id)->get();
             $property_facings = UnitAmenityOption::where('parent_id', 12)->get();
             $availability_status = UnitAmenityOption::where('parent_id', 10)->get();
